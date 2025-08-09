@@ -296,12 +296,17 @@ class IPLookup {
         const playerCount = status.players.online;
         const maxPlayers = status.players.max;
         const version = status.version;
+        const serverIcon = status.icon;
         
         container.innerHTML = `
             <div class="mc-status-${isOnline ? 'online' : 'offline'}">
                 <div class="mc-status-info">
-                    <div class="mc-status-indicator ${isOnline ? 'online' : 'offline'}"></div>
-                    <div>
+                    ${isOnline && serverIcon ? `
+                        <img src="${serverIcon}" alt="Server Icon" class="mc-server-icon" />
+                    ` : `
+                        <div class="mc-status-indicator ${isOnline ? 'online' : 'offline'}"></div>
+                    `}
+                    <div class="mc-status-text-container">
                         <div class="mc-status-text">
                             BD ZONE - ${isOnline ? 'Online' : 'Offline'}
                         </div>

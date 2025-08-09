@@ -635,6 +635,14 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex: 1;
+}
+
+.mc-status-text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
 }
 
 .mc-status-indicator {
@@ -654,16 +662,31 @@ body {
   box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.2);
 }
 
+.mc-server-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  border: 1px solid var(--border-color);
+}
+
 .mc-status-text {
   font-weight: 500;
   color: var(--text-primary);
   font-size: 0.875rem;
+  text-align: left;
+  width: 100%;
 }
 
 .mc-status-details {
   font-size: 0.75rem;
   color: var(--text-secondary);
   margin-top: 0.25rem;
+  text-align: left;
+  width: 100%;
 }
 
 .mc-player-count {
