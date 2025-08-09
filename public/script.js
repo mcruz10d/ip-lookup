@@ -93,7 +93,7 @@ class IPLookup {
             this.setButtonLoading(lookupBtn, true);
             this.showGlobalLoading(true);
             
-            const response = await fetch(`/api/lookup/${ip}`);
+            const response = await fetch(`/api/lookup?ip=${ip}`);
             const data = await response.json();
             
             if (response.ok) {
