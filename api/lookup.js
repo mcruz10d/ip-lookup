@@ -35,16 +35,111 @@ module.exports = async (req, res) => {
             });
         }
 
-        // Get location information using HTTPS
-        const locationResponse = await axios.get(`https://ip-api.com/json/${targetIP}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query`, { 
-            timeout: 5000 
-        });
-
-        const locationData = locationResponse.data;
+        // Try multiple geolocation services as fallbacks
+        let locationData = null;
+        let service = 'unknown';
+        
+        // First try: ipapi.co (free, reliable)
+        try {
+            console.log('Trying ipapi.co...');
+            const response = await axios.get(`https://ipapi.co/${targetIP}/json/`, { 
+                timeout: 5000,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (compatible; IP-Lookup-App/1.0)'
+                }
+            });
+            
+            if (response.data && !response.data.error) {
+                const data = response.data;
+                locationData = {
+                    status: 'success',
+                    country: data.country_name,
+                    countryCode: data.country_code,
+                    region: data.region_code,
+                    regionName: data.region,
+                    city: data.city,
+                    zip: data.postal,
+                    lat: data.latitude,
+                    lon: data.longitude,
+                    timezone: data.timezone,
+                    isp: data.org,
+                    org: data.org,
+                    as: data.asn,
+                    query: targetIP
+                };
+                service = 'ipapi.co';
+                console.log('ipapi.co successful');
+            }
+        } catch (error) {
+            console.log('ipapi.co failed:', error.message);
+        }
+        
+        // Second try: ip-api.com with different approach
+        if (!locationData) {
+            try {
+                console.log('Trying ip-api.com...');
+                const response = await axios.get(`http://ip-api.com/json/${targetIP}`, { 
+                    timeout: 5000,
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (compatible; IP-Lookup-App/1.0)'
+                    }
+                });
+                
+                if (response.data && response.data.status === 'success') {
+                    locationData = response.data;
+                    service = 'ip-api.com';
+                    console.log('ip-api.com successful');
+                }
+            } catch (error) {
+                console.log('ip-api.com failed:', error.message);
+            }
+        }
+        
+        // Third try: ipinfo.io (free tier)
+        if (!locationData) {
+            try {
+                console.log('Trying ipinfo.io...');
+                const response = await axios.get(`https://ipinfo.io/${targetIP}/json`, { 
+                    timeout: 5000,
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (compatible; IP-Lookup-App/1.0)'
+                    }
+                });
+                
+                if (response.data && !response.data.error) {
+                    const data = response.data;
+                    const [lat, lon] = (data.loc || '0,0').split(',');
+                    locationData = {
+                        status: 'success',
+                        country: data.country,
+                        countryCode: data.country,
+                        region: data.region,
+                        regionName: data.region,
+                        city: data.city,
+                        zip: data.postal,
+                        lat: parseFloat(lat) || null,
+                        lon: parseFloat(lon) || null,
+                        timezone: data.timezone,
+                        isp: data.org,
+                        org: data.org,
+                        as: data.org,
+                        query: targetIP
+                    };
+                    service = 'ipinfo.io';
+                    console.log('ipinfo.io successful');
+                }
+            } catch (error) {
+                console.log('ipinfo.io failed:', error.message);
+            }
+        }
+        
+        if (!locationData) {
+            throw new Error('All geolocation services failed');
+        }
 
         const ipInfo = {
             ip: targetIP,
-            success: locationData.status === 'success',
+            success: true,
             country: locationData.country || 'Unknown',
             countryCode: locationData.countryCode || 'Unknown',
             region: locationData.region || 'Unknown',
@@ -57,7 +152,8 @@ module.exports = async (req, res) => {
             isp: locationData.isp || 'Unknown',
             org: locationData.org || 'Unknown',
             as: locationData.as || 'Unknown',
-            query: locationData.query || targetIP
+            query: locationData.query || targetIP,
+            service: service
         };
 
         res.json(ipInfo);
