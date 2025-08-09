@@ -277,10 +277,15 @@ body {
   flex: 1;
   padding: 0.75rem 1rem;
   border: 1px solid var(--border-color);
+  border: 1px solid #e5e5e5; /* fallback */
   border-radius: var(--radius-sm);
+  border-radius: 8px; /* fallback */
   font-family: inherit;
   font-size: 0.875rem;
   background: var(--card-background);
+  background: #fff; /* fallback */
+  color: var(--text-primary);
+  color: #000; /* fallback */
   transition: all 0.2s ease;
   min-height: 44px;
 }
@@ -293,10 +298,40 @@ body {
 
 .input::placeholder {
   color: var(--text-muted);
+  color: #999; /* fallback */
 }
 
 .input.error {
   border-color: var(--error-color);
+  border-color: #ff4444; /* fallback */
+}
+
+/* Force input text to be always readable */
+.input {
+  color: #000 !important; /* Black text for light backgrounds */
+}
+
+/* If background appears dark to user, this will override */
+.input[style*="background"] {
+  color: #fff !important;
+}
+
+/* Additional cross-browser placeholder fixes */
+.input::-webkit-input-placeholder {
+  color: #999 !important;
+  opacity: 1;
+}
+.input::-moz-placeholder {
+  color: #999 !important;
+  opacity: 1;
+}
+.input:-ms-input-placeholder {
+  color: #999 !important;
+  opacity: 1;
+}
+.input::placeholder {
+  color: #999 !important;
+  opacity: 1;
 }
 
 /* Results */
@@ -537,5 +572,16 @@ body {
   
   .loading {
     background: rgba(0,0,0,0.95);
+  }
+  
+  /* Fix input text color in dark mode */
+  .input {
+    background: #1a1a1a !important;
+    color: #fff !important;
+    border-color: #2a2a2a !important;
+  }
+  
+  .input::placeholder {
+    color: #666 !important;
   }
 }
