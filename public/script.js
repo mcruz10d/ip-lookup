@@ -303,7 +303,7 @@ class IPLookup {
                     <div class="mc-status-indicator ${isOnline ? 'online' : 'offline'}"></div>
                     <div>
                         <div class="mc-status-text">
-                            Our Minecraft Server - ${isOnline ? 'Online' : 'Offline'}
+                            BD ZONE - ${isOnline ? 'Online' : 'Offline'}
                         </div>
                         <div class="mc-status-details">
                             ${isOnline ? `Version: ${version}` : 'Server is currently offline'}
@@ -331,7 +331,7 @@ class IPLookup {
                 <div class="mc-status-info">
                     <div class="mc-status-indicator offline"></div>
                     <div>
-                        <div class="mc-status-text">Our Minecraft Server - Error</div>
+                        <div class="mc-status-text">BD ZONE - Error</div>
                         <div class="mc-status-details">${message}</div>
                     </div>
                 </div>
