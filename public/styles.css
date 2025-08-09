@@ -183,6 +183,7 @@ body {
 
 .btn-primary {
   background: var(--accent-color);
+  background: #0066ff; /* fallback */
   color: white;
 }
 
@@ -193,6 +194,7 @@ body {
 
 .btn-secondary {
   background: var(--text-primary);
+  background: #000; /* fallback */
   color: white;
 }
 
@@ -203,10 +205,15 @@ body {
 
 .btn-text {
   transition: opacity 0.2s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .btn-loader {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 16px;
   height: 16px;
   border: 2px solid rgba(255,255,255,0.3);
@@ -215,6 +222,7 @@ body {
   animation: spin 1s linear infinite;
   opacity: 0;
   transition: opacity 0.2s ease;
+  z-index: 2;
 }
 
 .btn.loading .btn-text {
@@ -223,6 +231,35 @@ body {
 
 .btn.loading .btn-loader {
   opacity: 1;
+}
+
+/* Ensure button text is always visible by default */
+.btn:not(.loading) .btn-text {
+  opacity: 1 !important;
+}
+
+/* Additional button text fixes */
+.btn {
+  text-align: center;
+  line-height: 1.4;
+}
+
+.btn-text {
+  display: inline-block;
+  width: 100%;
+}
+
+/* Fallback in case .btn-text class is missing */
+.btn:not(.loading) {
+  color: white !important;
+}
+
+.btn-primary:not(.loading) {
+  color: white !important;
+}
+
+.btn-secondary:not(.loading) {
+  color: white !important;
 }
 
 @keyframes spin {
