@@ -69,8 +69,10 @@ module.exports = async (req, res) => {
         res.json(ipInfo);
     } catch (error) {
         console.error('Error fetching IP information:', error.message);
+        console.error('Full error:', error);
         res.status(500).json({
             error: 'Failed to fetch IP information',
+            details: error.message,
             ip: getClientIP(req) || 'Unknown',
             success: false
         });

@@ -33,8 +33,16 @@ class IPLookup {
     }
 
     autoDetectOnLoad() {
-        // Auto-detect after a brief delay for better UX
-        setTimeout(() => {
+        // Test API first, then auto-detect after a brief delay for better UX
+        setTimeout(async () => {
+            try {
+                console.log('Testing API connectivity...');
+                const testResponse = await fetch('/api/test');
+                const testData = await testResponse.json();
+                console.log('API test successful:', testData);
+            } catch (error) {
+                console.error('API test failed:', error);
+            }
             this.detectCurrentIP();
         }, 500);
     }
@@ -50,8 +58,12 @@ class IPLookup {
             this.setButtonLoading(button, true);
             this.showGlobalLoading(true);
             
+            console.log('Fetching from /api/ip-info...');
             const response = await fetch('/api/ip-info');
+            console.log('Response status:', response.status, response.statusText);
+            console.log('Response headers:', Object.fromEntries(response.headers.entries()));
             const data = await response.json();
+            console.log('Response data:', data);
             
             if (response.ok) {
                 this.displayResult(resultContainer, data);
@@ -60,7 +72,12 @@ class IPLookup {
             }
         } catch (error) {
             console.error('Error detecting IP:', error);
-            this.displayError(resultContainer, 'Network error. Please try again.');
+            console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name
+            });
+            this.displayError(resultContainer, `Network error: ${error.message}. Please try again.`);
         } finally {
             this.isLoading = false;
             this.setButtonLoading(button, false);
@@ -93,8 +110,12 @@ class IPLookup {
             this.setButtonLoading(lookupBtn, true);
             this.showGlobalLoading(true);
             
+            console.log(`Fetching from /api/lookup?ip=${ip}...`);
             const response = await fetch(`/api/lookup?ip=${ip}`);
+            console.log('Response status:', response.status, response.statusText);
+            console.log('Response headers:', Object.fromEntries(response.headers.entries()));
             const data = await response.json();
+            console.log('Response data:', data);
             
             if (response.ok) {
                 this.displayResult(resultContainer, data);
@@ -103,7 +124,12 @@ class IPLookup {
             }
         } catch (error) {
             console.error('Error looking up IP:', error);
-            this.displayError(resultContainer, 'Network error. Please try again.');
+            console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name
+            });
+            this.displayError(resultContainer, `Network error: ${error.message}. Please try again.`);
         } finally {
             this.isLoading = false;
             this.setButtonLoading(lookupBtn, false);
