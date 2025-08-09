@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Lookup</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <div class="container">
+            <!-- Header -->
+            <header class="header">
+                <div class="brand">
+                    <div class="logo">IP</div>
+                    <h1>Lookup</h1>
+                </div>
+                <p class="subtitle">Discover your location instantly</p>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main">
+                <!-- Auto Detection Card -->
+                <div class="card primary-card">
+                    <div class="card-header">
+                        <h2>Your Location</h2>
+                        <span class="card-icon">📍</span>
+                    </div>
+                    <button id="detectBtn" class="btn btn-primary">
+                        <span class="btn-text">Detect IP</span>
+                        <div class="btn-loader"></div>
+                    </button>
+                    <div id="currentIpResult" class="result"></div>
+                </div>
+
+                <!-- Manual Lookup Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Lookup IP</h2>
+                        <span class="card-icon">🔍</span>
+                    </div>
+                    <div class="search-container">
+                        <input 
+                            type="text" 
+                            id="ipInput" 
+                            placeholder="Enter IP address"
+                            class="input"
+                            maxlength="15"
+                        >
+                        <button id="lookupBtn" class="btn btn-secondary">
+                            <span class="btn-text">Search</span>
+                            <div class="btn-loader"></div>
+                        </button>
+                    </div>
+                    <div id="lookupResult" class="result"></div>
+                </div>
+
+                <!-- API Info Card -->
+                <div class="card api-card">
+                    <div class="card-header">
+                        <h2>API</h2>
+                        <span class="card-icon">⚡</span>
+                    </div>
+                    <div class="api-list">
+                        <div class="api-item">
+                            <span class="method">GET</span>
+                            <code>/api/ip-info</code>
+                        </div>
+                        <div class="api-item">
+                            <span class="method">GET</span>
+                            <code>/api/lookup/:ip</code>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
