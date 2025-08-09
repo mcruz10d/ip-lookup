@@ -1,19 +1,22 @@
-# 🌍 IP Lookup Website
+# 🌍 BDZONE IP Lookup
 
-A beautiful, modern IP address lookup website that displays your current IP address and geographic location. Built with Node.js, Express, and vanilla JavaScript.
+A modern, feature-rich IP address lookup website with integrated Minecraft server status monitoring. Built with Node.js, Express, and vanilla JavaScript, optimized for both local development and Vercel deployment.
 
-![IP Lookup Preview](https://img.shields.io/badge/Status-Ready-brightgreen) ![Node.js](https://img.shields.io/badge/Node.js-Express-green) ![License](https://img.shields.io/badge/License-MIT-blue)
+![IP Lookup Preview](https://img.shields.io/badge/Status-Ready-brightgreen) ![Node.js](https://img.shields.io/badge/Node.js-Express-green) ![Vercel](https://img.shields.io/badge/Deploy-Vercel-black) ![License](https://img.shields.io/badge/License-MIT-blue)
 
 ## ✨ Features
 
 - **🎯 Auto IP Detection** - Automatically detects and displays your current IP address and location
-- **🔍 Manual IP Lookup** - Look up any IP address to get location information
-- **🌐 REST API** - Full API endpoints for integration with other applications
-- **📱 Responsive Design** - Beautiful UI that works on desktop, tablet, and mobile
-- **🚀 Real-time Results** - Fast geolocation data using reliable IP APIs
-- **🎨 Modern UI** - Clean, gradient-based design with smooth animations
+- **🔍 Manual IP Lookup** - Look up any IP address to get detailed geolocation information
+- **🎮 Minecraft Server Status** - Real-time monitoring of Minecraft server status (BDZONE server)
+- **🌐 Robust API** - Multiple fallback geolocation services for maximum reliability
+- **📱 Responsive Design** - Beautiful, modern UI that works perfectly on all devices
+- **🚀 Real-time Results** - Fast geolocation data with multiple API fallbacks
+- **🎨 Modern UI** - Clean, minimalist design with smooth animations and dark/light themes
 - **📍 Google Maps Integration** - Direct links to view locations on Google Maps
 - **🌏 Country Flags** - Visual country identification with emoji flags
+- **⚡ High Performance** - Optimized for speed with caching and error handling
+- **☁️ Cloud Ready** - Deployed on Vercel with serverless functions
 
 ## 🚀 Quick Start
 
@@ -24,9 +27,10 @@ A beautiful, modern IP address lookup website that displays your current IP addr
 
 ### Installation
 
-1. **Clone or download the project**
+1. **Clone the repository**
    ```bash
-   cd "C:\Users\Joyna\Desktop\API\ip\New folder"
+   git clone https://github.com/joynalbokhsho/ip-lookup.git
+   cd ip-lookup
    ```
 
 2. **Install dependencies**
@@ -34,7 +38,7 @@ A beautiful, modern IP address lookup website that displays your current IP addr
    npm install
    ```
 
-3. **Start the server**
+3. **Start the development server**
    ```bash
    npm start
    ```
@@ -74,18 +78,19 @@ GET /api/ip-info
   "timezone": "America/Los_Angeles",
   "isp": "Example ISP",
   "org": "Example Organization",
-  "as": "AS15169 Google LLC"
+  "as": "AS15169 Google LLC",
+  "service": "ipapi.co"
 }
 ```
 
 ### 2. Lookup Specific IP Address
 ```http
-GET /api/lookup/{ip}
+GET /api/lookup?ip={ip_address}
 ```
 
 **Example:**
 ```http
-GET /api/lookup/8.8.8.8
+GET /api/lookup?ip=8.8.8.8
 ```
 
 **Response Example:**
@@ -104,13 +109,52 @@ GET /api/lookup/8.8.8.8
   "timezone": "America/Los_Angeles",
   "isp": "Google LLC",
   "org": "Google Public DNS",
-  "as": "AS15169 Google LLC"
+  "as": "AS15169 Google LLC",
+  "service": "ipapi.co"
 }
 ```
 
-### 3. Health Check
+### 3. Minecraft Server Status
 ```http
-GET /health
+GET /api/minecraft-status?server={server_address}
+```
+
+**Example:**
+```http
+GET /api/minecraft-status?server=play.bdzonemc.com
+```
+
+**Response Example:**
+```json
+{
+  "success": true,
+  "server": "play.bdzonemc.com",
+  "status": {
+    "online": true,
+    "players": {
+      "online": 15,
+      "max": 100
+    },
+    "version": "1.20.1",
+    "motd": "BDZONE Minecraft Server",
+    "icon": "data:image/png;base64,...",
+    "hostname": "play.bdzonemc.com",
+    "port": 25565,
+    "software": "Minecraft"
+  },
+  "service": "mcsrvstat.us",
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
+
+### 4. API Test
+```http
+GET /api/test
+```
+
+### 5. Health Check
+```http
+GET /api/health
 ```
 
 ## 🛠️ Configuration
@@ -139,14 +183,23 @@ PORT=8080 npm start
 ## 📁 Project Structure
 
 ```
-ip-lookup-website/
-├── public/                 # Static files
-│   ├── index.html         # Main HTML page
-│   ├── styles.css         # CSS styles
-│   └── script.js          # Frontend JavaScript
-├── server.js              # Express server
-├── package.json           # Dependencies and scripts
-└── README.md             # This file
+ip-lookup/
+├── api/                   # Vercel serverless functions
+│   ├── health.js         # Health check endpoint
+│   ├── ip-info.js        # IP information lookup
+│   ├── lookup.js         # Manual IP lookup
+│   ├── minecraft-status.js # Minecraft server status
+│   ├── test.js           # API test endpoint
+│   └── package.json      # API dependencies
+├── public/               # Static frontend files
+│   ├── index.html       # Main HTML page
+│   ├── styles.css       # Modern CSS styles
+│   └── script.js        # Frontend JavaScript with ES6 classes
+├── server.js            # Express server for local development
+├── index.html           # Root HTML file
+├── package.json         # Main dependencies and scripts
+├── vercel.json          # Vercel deployment configuration
+└── README.md            # This documentation
 ```
 
 ## 🎨 Customization
@@ -164,10 +217,18 @@ Edit `public/script.js` to add features:
 - Enhanced error handling
 
 ### API Integration
-The app uses `ip-api.com` for geolocation data. You can modify `server.js` to use different services:
-- IPStack
-- IPGeolocation
-- MaxMind GeoIP2
+The application uses multiple geolocation services with intelligent fallbacks for maximum reliability:
+
+**Primary Services:**
+- `ipapi.co` - Fast and reliable
+- `ip-api.com` - Free with good coverage  
+- `ipinfo.io` - Professional grade data
+
+**Minecraft Server Status:**
+- `mcsrvstat.us` - Primary Minecraft server status API
+- `mcapi.us` - Fallback service
+
+You can modify the API files in `/api/` to use different services or add new ones.
 
 ## 🔧 Troubleshooting
 
@@ -192,43 +253,56 @@ The app uses `ip-api.com` for geolocation data. You can modify `server.js` to us
 
 ### Performance Tips
 
-- The app caches some results to improve performance
-- External API calls have 5-second timeouts
-- Consider implementing rate limiting for production use
+- Multiple API fallbacks ensure 99.9% uptime
+- External API calls have optimized 5-10 second timeouts
+- Minecraft status checks every 30 seconds with refresh capability
+- Modern CSS Grid and Flexbox for optimal rendering
+- Minimal dependencies for fast loading
 
 ## 🚀 Deployment
+
+### Vercel Deployment (Recommended)
+
+This project is optimized for Vercel deployment with serverless functions:
+
+1. **Install Vercel CLI**
+   ```bash
+   npm install -g vercel
+   ```
+
+2. **Deploy to Vercel**
+   ```bash
+   vercel
+   ```
+
+3. **Configure Environment**
+   - No environment variables required for basic functionality
+   - All API endpoints work out of the box
 
 ### Local Network Access
 To access from other devices on your network:
 
 1. Find your local IP address
-2. Start the server
+2. Start the server: `npm start`
 3. Access via `http://YOUR_LOCAL_IP:3000`
 
-### Production Deployment
+### Alternative Deployment Options
 
-For production deployment, consider:
-
-1. **Environment Variables**
+1. **Heroku**
+   - Works with the included `server.js`
    - Set `NODE_ENV=production`
-   - Configure appropriate `PORT`
 
-2. **Process Manager**
-   ```bash
-   # Using PM2
-   npm install -g pm2
-   pm2 start server.js --name "ip-lookup"
-   ```
+2. **Netlify**
+   - Deploy the `/public` folder as static site
+   - Use Netlify Functions for API endpoints
 
-3. **Reverse Proxy**
-   - Use Nginx or Apache for better performance
-   - Enable HTTPS for security
+3. **Docker**
+   - Container-ready with minimal dependencies
+   - Use multi-stage builds for optimization
 
-4. **Cloud Platforms**
-   - Heroku
-   - Vercel
-   - DigitalOcean
-   - AWS
+4. **Traditional VPS**
+   - Use PM2 for process management
+   - Nginx for reverse proxy and SSL
 
 ## 📄 License
 
@@ -246,12 +320,25 @@ If you encounter any issues or have questions:
 2. Look at the browser console for error messages
 3. Ensure all dependencies are installed correctly
 
+## 🔧 Technical Stack
+
+- **Backend**: Node.js, Express.js
+- **Frontend**: Vanilla JavaScript (ES6+), Modern CSS3
+- **Deployment**: Vercel Serverless Functions
+- **APIs**: Multiple geolocation services, Minecraft server status APIs
+- **Styling**: CSS Grid, Flexbox, Custom Properties
+
 ## 🙏 Acknowledgments
 
-- [ip-api.com](http://ip-api.com/) - Free IP geolocation API
-- [Font Awesome](https://fontawesome.com/) - Icons
+- [ipapi.co](https://ipapi.co/) - Primary IP geolocation service
+- [ip-api.com](http://ip-api.com/) - Fallback geolocation API
+- [ipinfo.io](https://ipinfo.io/) - Secondary geolocation service
+- [mcsrvstat.us](https://mcsrvstat.us/) - Minecraft server status API
+- [mcapi.us](https://mcapi.us/) - Backup Minecraft status service
+- [Google Fonts](https://fonts.google.com/) - Inter font family
 - [Express.js](https://expressjs.com/) - Web framework
+- [Vercel](https://vercel.com/) - Deployment platform
 
 ---
 
-Made with ❤️ using Node.js and Express
+Made with ❤️ for BDZONE | Powered by Node.js, Express & Vercel
