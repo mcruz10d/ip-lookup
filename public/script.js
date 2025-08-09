@@ -8,6 +8,7 @@ class IPLookup {
     init() {
         this.bindEvents();
         this.autoDetectOnLoad();
+        this.initMinecraftStatus();
     }
 
     bindEvents() {
@@ -258,9 +259,92 @@ class IPLookup {
         return flags[countryCode] || '🌍';
     }
 
+    // Minecraft Server Status Methods
+    initMinecraftStatus() {
+        this.fetchMinecraftStatus();
+        
+        // Refresh every 30 seconds
+        setInterval(() => {
+            this.fetchMinecraftStatus();
+        }, 30000);
+    }
+
+    async fetchMinecraftStatus() {
+        const container = document.getElementById('minecraftStatus');
+        
+        try {
+            console.log('Fetching Minecraft server status...');
+            
+            const response = await fetch('/api/minecraft-status?server=play.bdzonemc.com');
+            const data = await response.json();
+            
+            console.log('Minecraft status response:', data);
+            
+            if (response.ok && data.success) {
+                this.displayMinecraftStatus(container, data.status);
+            } else {
+                this.displayMinecraftError(container, data.error || 'Failed to fetch server status');
+            }
+        } catch (error) {
+            console.error('Error fetching Minecraft status:', error);
+            this.displayMinecraftError(container, 'Unable to connect to server');
+        }
+    }
+
+    displayMinecraftStatus(container, status) {
+        const isOnline = status.online;
+        const playerCount = status.players.online;
+        const maxPlayers = status.players.max;
+        const version = status.version;
+        
+        container.innerHTML = `
+            <div class="mc-status-${isOnline ? 'online' : 'offline'}">
+                <div class="mc-status-info">
+                    <div class="mc-status-indicator ${isOnline ? 'online' : 'offline'}"></div>
+                    <div>
+                        <div class="mc-status-text">
+                            Our Minecraft Server - ${isOnline ? 'Online' : 'Offline'}
+                        </div>
+                        <div class="mc-status-details">
+                            ${isOnline ? `Version: ${version}` : 'Server is currently offline'}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    ${isOnline ? `
+                        <div class="mc-player-count">
+                            <span class="mc-player-icon">👥</span>
+                            <span>${playerCount}/${maxPlayers} players</span>
+                        </div>
+                    ` : ''}
+                    <button class="mc-refresh-btn" onclick="window.ipLookup.fetchMinecraftStatus()" title="Refresh status">
+                        🔄
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    displayMinecraftError(container, message) {
+        container.innerHTML = `
+            <div class="mc-status-offline">
+                <div class="mc-status-info">
+                    <div class="mc-status-indicator offline"></div>
+                    <div>
+                        <div class="mc-status-text">Our Minecraft Server - Error</div>
+                        <div class="mc-status-details">${message}</div>
+                    </div>
+                </div>
+                <button class="mc-refresh-btn" onclick="window.ipLookup.fetchMinecraftStatus()" title="Refresh status">
+                    🔄
+                </button>
+            </div>
+        `;
+    }
+
 }
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new IPLookup();
+    window.ipLookup = new IPLookup();
 });
